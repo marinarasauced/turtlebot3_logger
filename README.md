@@ -21,5 +21,5 @@ cd ~/catkin_ws && catkin_make
 ```
 ## Usage instructions
 Once you have the package built, you can launch the node. The callback functions that log the data are designed to work with the [ROBOTIS TurtleBot3](https://github.com/ROBOTIS-GIT/turtlebot3) and [VICON bridge](https://github.com/ethz-asl/vicon_bridge) packages. However, data is only logged as it is passed through the callback function, so the node is functional with partial feedback from a VICON system and/or onboard sensors. The TurtleBot3 packages should be installed locally on the TurtleBot3 RasPi whereas the VICON bridge package should be installed on your Ubuntu machine.
-##
+  
 Launch the TurtleBot3 bringup function onboard the device.
