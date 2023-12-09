@@ -15,3 +15,7 @@ Navigate to the source folder of your catkin workspace and clone the repository.
 ```
 cd ~/catkin_ws/src && git clone https://github.com/marinarasauced/turtlebot3_logger.git
 ```
+Return to the catkin workspace and compile the package.
+```
+cd ~/catkin_ws && catkin_make
+```
