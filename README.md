@@ -1,7 +1,12 @@
 # turtlebot3_logger
 ## Overview
-This package contains a ROS node for a TurtleBot3. It logs VICON feedback, IMU data, OpenCR Odometry, wheel velocities and torques, and control inputs. Data is stored in several .csv files on node shutdown. The target user for this repo is anyone with access to AVMI resources.
-## Setup requirements
-- A TurtleBot3 with Ubuntu 20.04 and ROS Noetic installed
-- Access to the AVMI local WiFi network
-- An Ubuntu machine
+This repo contains a ROS Noetic package for a TurtleBot3 that logs VICON feedback, IMU data, OpenCR Odometry, wheel velocities and torques, and control inputs to several .csv files on node shutdown. The target user for this repo is anyone with access to AVMI resources or anyone with a VICON system.
+## Installation requirements
+-A TurtleBot3 device - *if you are working on a new device, following [these steps](https://emanual.robotis.com/docs/en/platform/turtlebot3/quick-start/)
+
+## Installation instructions
+From a remote Ubuntu device, log into the TurtleBot3 using SSH.
+'''
+ssh ubuntu@{IP
+
+
