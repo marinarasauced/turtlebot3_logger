@@ -19,3 +19,4 @@ Return to the catkin workspace and compile the package.
 ```
 cd ~/catkin_ws && catkin_make
 ```
+## Usage instructions
