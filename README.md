@@ -25,7 +25,7 @@ Start a core on the desktop machine, then launch the bringup function in a termi
 ```
 roslaunch turtlebot3_bringup turtlebot3_robot.launch
 ```
-In a new terminal onboard the TurtleBot3's RasPi, run the node. The .csv output files will be saved to the current working directory, so if you wish to store the .csv files in a specific directory, navigate there first before starting the node.
+In a new terminal onboard the TurtleBot3's RasPi, run the node. The .csv output files will be saved to the current working directory, so if you wish to store the .csv files in a specific directory, navigate there first before starting the node. It is recommended that you use the mkdir command to create a directory specifically for the logs.
 ```
 rosrun turtlebot3_logger logger
 ```
@@ -33,4 +33,16 @@ A message should display in the terminal indicating the node was successfully la
 ```
 rostopic pub /followline/flag Bool "data: true"
 ```
-After shutting down the node, two messages should be printed in the TurtleBot3 terminal indicating that the logging has commenced and that the logging is terminated.
+After shutting down the node, two messages should be printed in the TurtleBot3 terminal indicating that the logging has commenced and that the logging is terminated. To retrieve the data, use scp in a terminal on the desktop machine to download either the individual files or a directory containing them all. 
+  
+For an individual file transfer:
+```
+scp ubuntu@{IP_OF_TURTLEBOT3}:/{PATH_TO_FILE_ON_TURTLEBOT3}/{FILE_NAME}.csv /{PATH_TO_SAVE_FILE_ON_DESKTOP}
+```
+For a directory transfer:
+```
+scp -r ubuntu@{IP_OF_TURTLEBOT3}:/{PATH_TO_DIRECTORY_ON_TURTLEBOT3}/{DIRECTORY_NAME} /{PATH_TO_SAVE_DIRECTORY_ON_DESKTOP}
+```
+You will be prompted to enter the TurtleBot3's password, after which the transfer will commence.
+## Notes
+- An active internet connection is required to install packages to the TurtleBot3 from GitHub repositories. The transfer of the .csv log files does not require an internet connection, however, it does require that both the TurtleBot3 device and Ubuntu desktop machine are on the same network.
