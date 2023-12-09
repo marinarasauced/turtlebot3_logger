@@ -29,9 +29,9 @@ In a new terminal onboard the TurtleBot3's RasPi, run the node. The .csv output 
 ```
 rosrun turtlebot3_logger logger
 ```
-A message should display in the terminal indicating the node was successfully launched and that data is being stored. Data will continue to be stored until a flag is published, forcing the node to shutdown. To shutdown the node, publish a Bool to the "/followline/flag" topic. To publish this message, either add a new publisher to another node that is called when specific conditions are met, or manually publish a message from a terminal on the desktop machine.
+A message should display in the terminal indicating the node was successfully launched and that data is being stored. Data will continue to be stored until a flag is published, forcing the node to shutdown. To shutdown the node, publish a Bool to the "/turtlebot3/logger" topic. To publish this message, either add a new publisher to another node that is called when specific conditions are met, or manually publish a message from a terminal on the desktop machine.
 ```
-rostopic pub /followline/flag Bool "data: true"
+rostopic pub /turtlebot3/logger Bool "data: true"
 ```
 After shutting down the node, two messages should be printed in the TurtleBot3 terminal indicating that the logging has commenced and that the logging is terminated. To retrieve the data, use scp in a terminal on the desktop machine to download either the individual files or a directory containing them all. 
   
