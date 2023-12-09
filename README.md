@@ -7,9 +7,11 @@ This repo contains a ROS Noetic package for a TurtleBot3 that logs VICON feedbac
 - An Ubuntu 20.04 machine
 
 ## Installation instructions
-From your remote Ubuntu device, log into the TurtleBot3 using SSH.
+From your remote Ubuntu device, log into the TurtleBot3 using SSH, and enter the device password.
 ```
 ssh ubuntu@{IP_OF_TURTLEBOT3}
 ```
-
-
+Navigate to the source folder of your catkin workspace and clone the repository. This step requires the TurtleBot3 to have an active internet connection.
+```
+cd ~/catkin_ws/src && git clone https://github.com/marinarasauced/turtlebot3_logger.git
+```
