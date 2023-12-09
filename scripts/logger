@@ -172,7 +172,7 @@ if __name__=="__main__":
         print(MSG01)
 
         # Wait for flag indicating experiment completion:
-        rospy.wait_for_message("/followline/flag", Bool)
+        rospy.wait_for_message("/turtlebot3/logger", Bool)
 
         # Indicate loggings is initiated:
         print(MSG02)
