@@ -1,0 +1,216 @@
+#!/usr/bin/env python
+
+import rospy
+from std_msgs.msg import Bool
+from nav_msgs.msg import Odometry
+from sensor_msgs.msg import Imu
+from sensor_msgs.msg import JointState
+from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TransformStamped
+import numpy as np
+import time
+import csv
+
+##################################################################################
+
+MSG01 = """
+Initializing TurtleBot3 onboard logger
+
+CTRL-C to quit
+-----------------------------------------
+"""
+
+MSG02 = """
+Logging data to .csv files in current directory
+"""
+
+MSG03 = """
+Data logged to .csv files in current directory
+"""
+
+MSG04 = """
+Communication ended
+"""
+
+##################################################################################
+
+def logData(name, head, data):
+    with open(name, "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(head)
+        rows, cols = data.shape
+        row = 0
+        while row < rows:
+            line = []
+            col = 0
+            while col < cols:
+                appendData(line, str(data[row, col]))
+                col += 1
+            row += 1
+            writer.writerow(line)
+
+def appendData(array, data):
+    if hasattr(array, "append"):
+        array.append(data)
+
+##################################################################################
+
+def viconCallback(data):
+
+    # Time at which data is received onboard:
+    appendData(viconTime, time.time())
+
+    # Translation (point) data:
+    appendData(viconTx, data.transform.translation.x)
+    appendData(viconTy, data.transform.translation.y)
+    appendData(viconTz, data.transform.translation.z)
+
+    # Orientation (quaternion) data:
+    appendData(viconQx, data.transform.rotation.x)
+    appendData(viconQy, data.transform.rotation.y)
+    appendData(viconQz, data.transform.rotation.z)
+    appendData(viconQw, data.transform.rotation.w)
+
+def imuCallback(data):
+
+    # Time at which data is received onboard:
+    appendData(imuTime, time.time())
+
+    # Orientation (quaternion) data:
+    appendData(imuQx, data.orientation.x)
+    appendData(imuQy, data.orientation.y)
+    appendData(imuQz, data.orientation.z)
+    appendData(imuQw, data.orientation.w)
+
+    # Angular velocity data:
+    appendData(imuwx, data.angular_velocity.x)
+    appendData(imuwy, data.angular_velocity.y)
+    appendData(imuwz, data.angular_velocity.z)
+
+    # Linear acceleration data:
+    appendData(imuax, data.linear_acceleration.x)
+    appendData(imuay, data.linear_acceleration.y)
+    appendData(imuaz, data.linear_acceleration.z)
+
+def odomCallback(data):
+
+    # Time at which data is received onboard:
+    appendData(odomTime, time.time())
+
+    # Point data:
+    appendData(odomTx, data.pose.pose.position.x)
+    appendData(odomTy, data.pose.pose.position.y)
+    appendData(odomTz, data.pose.pose.position.z)
+
+    # Orientation (quaternion) data:
+    appendData(odomQx, data.pose.pose.orientation.x)
+    appendData(odomQy, data.pose.pose.orientation.y)
+    appendData(odomQz, data.pose.pose.orientation.z)
+    appendData(odomQw, data.pose.pose.orientation.w)
+
+def jointCallback(data):
+
+    # Time at which data is received onboard:
+    appendData(jointTime, time.time())
+
+    # Velocity of left and right wheel (presumably angular velocity [rad/s] but uncertain):
+    jointV = data.velocity
+    appendData(jointVL, jointV[0])
+    appendData(jointVR, jointV[1])
+
+    # Torque of left and right wheel (effort):
+    jointEffort = data.effort
+    appendData(jointEffortL, jointEffort[0])
+    appendData(jointEffortR, jointEffort[1])
+
+def uCallback(data):
+
+    # Time at which data is received onboard:
+    appendData(uTime, time.time())
+
+    # Control inputs:
+    appendData(uLin, data.linear.x)
+    appendData(uAng, data.angular.z)
+
+##################################################################################
+
+if __name__=="__main__":
+
+    # Initialize node:
+    rospy.init_node("turtlebot3_logger")
+
+    # Initialize VICON subscriber and data storage:
+    viconTime = []
+    viconTx = []; viconTy = []; viconTz = []
+    viconQx = []; viconQy = []; viconQz = []; viconQw = []
+    rospy.Subscriber("/vicon/TurtleBot01/TurtleBot01", TransformStamped, viconCallback)
+
+    # Initialize IMU subscriber and data storage:
+    imuTime = []
+    imuQx = []; imuQy = []; imuQz = []; imuQw = []
+    imuwx = []; imuwy = []; imuwz = []
+    imuax = []; imuay = []; imuaz = []
+    rospy.Subscriber("imu", Imu, imuCallback)
+
+    # Initialize ODOM subscriber and data storage:
+    odomTime = []
+    odomTx = []; odomTy = []; odomTz = []
+    odomQx = []; odomQy = []; odomQz = []; odomQw = []
+    rospy.Subscriber("odom", Odometry, odomCallback)
+
+    # Initialize JOINT STATE subscriber and data storage:
+    jointTime = []; jointVL = []; jointVR = []; jointEffortL = []; jointEffortR = []
+    rospy.Subscriber("joint_states", JointState, jointCallback)
+
+    # Initialize CONTROL INPUT subscriber and data storage:
+    uTime = []; uLin = []; uAng = []
+    rospy.Subscriber("cmd_vel", Twist, uCallback)
+
+    try:
+
+        # Indicate the node is initiated:
+        print(MSG01)
+
+        # Wait for flag indicating experiment completion:
+        rospy.wait_for_message("/followline/flag", Bool)
+
+        # Indicate loggings is initiated:
+        print(MSG02)
+
+        # Log VICON data:
+        name = "viconData.csv"
+        head = ["time (sec)", "Tx (m)", "Ty (m)", "Tz (m)", "Qx", "Qy", "Qz", "Qw"]
+        data = np.array([viconTime, viconTx, viconTy, viconTz, viconQx, viconQy, viconQz, viconQw]).T
+        logData(name, head, data)
+
+        # Log IMU data:
+        name = "imuData.csv"
+        head = ["time (sec)", "Qx", "Qy", "Qz", "Qw", "wx (rad/s)", "wy (rad/s)", "wz (rad/s)", "ax (m/s^2)", "ay (m/s^2)", "az (m/s^2)"]
+        data = np.array([imuTime, imuQx, imuQy, imuQz, imuQw, imuwx, imuwy, imuwz, imuax, imuay, imuaz]).T
+        logData(name, head, data)
+
+        # Log ODOM data:
+        name = "odomData.csv"
+        head = ["time (sec)", "Tx (m)", "Ty (m)", "Tz (m)", "Qx", "Qy", "Qz", "Qw"]
+        data = np.array([odomTime, odomTx, odomTy, odomTz, odomQx, odomQy, odomQz, odomQw]).T
+        logData(name, head, data)
+
+        # Log JOINT STATE data:
+        name = "jointData.csv"
+        head = ["time (sec)", "left vel", "right vel", "left effort", "right effort"]
+        data = np.array([jointTime, jointVL, jointVR, jointEffortL, jointEffortR]).T
+        logData(name, head, data)
+
+        # Log CONTROL INPUT data:
+        name = "uData.csv"
+        head = ["time (sec)", "uLin (m/s)", "uAng (rad/s)"]
+        data = np.array([uTime, uLin, uAng]).T
+        logData(name, head, data)
+
+        # Indicate logging is complete:
+        print(MSG03)
+
+    except:
+
+        # Indicate node is shut down:
+        print(MSG04)
